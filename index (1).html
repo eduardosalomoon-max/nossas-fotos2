@@ -1,0 +1,521 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#7fbac6" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#15434f" media="(prefers-color-scheme: dark)">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Fotos">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&display=swap" rel="stylesheet">
+<title>Nossas fotos</title>
+<style>
+:root{--s1:#a8e0e5;--s2:#4a96ac;--deep:#0b3441;--mint:#3cf0b0;--foam:#f2fdfd;--glass:rgba(242,253,253,.6);--fg:var(--deep);--shadow:rgba(11,52,65,.5);
+ box-sizing:border-box;padding-top:env(safe-area-inset-top,0px)}
+@media (prefers-color-scheme:dark){:root{--s1:#15434f;--s2:#071e26;--fg:#e8fbfb;--glass:rgba(7,30,38,.65);--shadow:rgba(0,0,0,.6)}}
+*,*::before,*::after{box-sizing:inherit;-webkit-tap-highlight-color:transparent}
+html{background:linear-gradient(165deg,var(--s1),var(--s2));background-attachment:fixed;min-height:100%}
+body{margin:0;min-height:100vh;color:var(--fg);font:16px/1.4 "Bricolage Grotesque",ui-rounded,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;padding-bottom:calc(120px + env(safe-area-inset-bottom,0px))}
+body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
+ background:radial-gradient(60vmax 60vmax at 95% -10%,rgba(60,240,176,.30),transparent 60%),radial-gradient(55vmax 55vmax at -15% 110%,rgba(255,255,255,.28),transparent 60%)}
+@media (prefers-color-scheme:dark){body::before{background:radial-gradient(60vmax 60vmax at 95% -10%,rgba(60,240,176,.14),transparent 60%),radial-gradient(55vmax 55vmax at -15% 110%,rgba(74,150,172,.20),transparent 60%)}}
+button{font:inherit;cursor:pointer;color:inherit}
+button:disabled{opacity:.6;cursor:default}
+button:focus-visible,input:focus-visible{outline:3px solid var(--mint);outline-offset:3px}
+.hide{display:none!important}
+svg{display:block}
+
+/* cabeçalho */
+header{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;padding:26px 22px 10px;max-width:900px;margin:0 auto}
+h1{margin:0;font-size:clamp(2.4rem,9vw,3.6rem);line-height:.95;font-weight:800;letter-spacing:-.035em}
+.under{width:150px;height:12px;margin-top:6px;stroke:var(--mint);fill:none;stroke-width:5;stroke-linecap:round;filter:drop-shadow(0 2px 3px var(--shadow))}
+#count{margin:10px 0 0;opacity:.85;font-weight:500;font-size:.95rem}
+.hactions{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}
+.chip{border:0;padding:9px 16px;border-radius:99px;background:var(--glass);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);font-weight:600;font-size:.9rem;box-shadow:0 8px 18px -12px var(--shadow)}
+.chip:active{transform:scale(.96)}
+.chip.mint{background:var(--mint);color:var(--deep)}
+.tabs{max-width:900px;margin:8px auto 0;padding:0 22px}
+.seg{display:inline-flex;padding:4px;border-radius:99px;background:var(--glass);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
+.seg button{border:0;background:transparent;padding:8px 18px;border-radius:99px;font-weight:700;font-size:.92rem;opacity:.7;transition:background .2s,opacity .2s}
+.seg button.on{background:var(--mint);color:var(--deep);opacity:1;box-shadow:0 6px 14px -6px rgba(60,240,176,.9)}
+
+/* álbum */
+.day{max-width:900px;margin:0 auto;padding:12px 22px 6px}
+.day h2{position:sticky;top:calc(8px + env(safe-area-inset-top,0px));z-index:3;display:flex;justify-content:space-between;align-items:baseline;margin:0 0 12px;padding:8px 16px;border-radius:99px;background:var(--glass);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);font-size:1.15rem;font-weight:700;letter-spacing:-.01em;box-shadow:0 8px 18px -14px var(--shadow)}
+.day h2 span{font-size:.85rem;font-weight:500;opacity:.7}
+.mosaic{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
+.mosaic>:first-child{grid-column:span 2}
+@media (min-width:700px){.mosaic{grid-template-columns:repeat(4,1fr)}.mosaic>:first-child{grid-column:span 2;grid-row:span 2}}
+.frame{position:relative;display:block;width:100%;aspect-ratio:1;padding:0;overflow:hidden;background:rgba(255,255,255,.25);
+ border:4px solid var(--mint);border-radius:10px 28px 12px 24px/24px 10px 26px 12px;box-shadow:0 14px 26px -14px var(--shadow);transition:transform .18s}
+.mosaic>:nth-child(even) .frame{border-radius:26px 10px 24px 12px/10px 24px 12px 26px}
+.mosaic>:nth-child(3n) .frame{border-radius:14px 22px 10px 28px/28px 12px 22px 10px}
+@media (hover:hover){.frame:hover{transform:translateY(-3px) rotate(-.5deg)}}
+.frame:active{transform:scale(.97)}
+.frame img{width:100%;height:100%;object-fit:cover;display:block;opacity:0;transition:opacity .5s}
+.frame img.on{opacity:1}
+.anim .frame{animation:rise .55s cubic-bezier(.2,.8,.2,1) both;animation-delay:calc(var(--i,0)*45ms)}
+@keyframes rise{from{opacity:0;transform:translateY(16px) scale(.96)}}
+.time{position:absolute;left:10px;bottom:10px;padding:3px 10px;border-radius:99px;background:var(--glass);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);font-size:.8rem;font-weight:600;color:var(--fg)}
+.fav{position:absolute;right:12px;top:8px;font-size:1.4rem;color:var(--mint);text-shadow:0 1px 5px var(--shadow)}
+.cap-dot{position:absolute;left:10px;top:10px;width:28px;height:28px;border-radius:50%;background:var(--glass);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);display:grid;place-items:center;font-size:.8rem;color:var(--fg)}
+.sk{aspect-ratio:1;border-radius:24px;background:linear-gradient(100deg,transparent 30%,rgba(255,255,255,.35) 50%,transparent 70%) 0 0/200% 100%,var(--glass);animation:shine 1.4s linear infinite}
+@keyframes shine{to{background-position:-200% 0}}
+.empty{max-width:340px;margin:20px auto;padding:0 22px;text-align:center}
+.empty .hero{width:190px;margin:0 auto 14px}
+.empty p{margin:0}
+
+/* barra de ações */
+.dock{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(16px + env(safe-area-inset-bottom,0px));display:flex;align-items:center;gap:10px;padding:9px;border-radius:99px;background:var(--glass);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);box-shadow:0 18px 34px -12px var(--shadow);z-index:4}
+.pick{width:54px;height:54px;border-radius:50%;border:0;background:rgba(255,255,255,.35);display:grid;place-items:center}
+.shoot{height:58px;padding:0 28px 0 22px;border-radius:99px;border:0;background:var(--mint);color:var(--deep);font-weight:800;font-size:1.05rem;display:flex;align-items:center;gap:10px;box-shadow:0 8px 18px -6px rgba(60,240,176,.8)}
+.shoot:active,.pick:active{transform:scale(.95)}
+.pick svg,.shoot svg{width:26px;height:26px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.toast{position:fixed;top:calc(14px + env(safe-area-inset-top,0px));left:50%;transform:translateX(-50%);padding:10px 18px;border-radius:99px;background:var(--glass);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);font-weight:600;box-shadow:0 10px 24px -10px var(--shadow);z-index:20;max-width:92vw;text-align:center}
+.toast.busy::before{content:"";display:inline-block;width:13px;height:13px;margin-right:10px;border:3px solid currentColor;border-right-color:transparent;border-radius:50%;vertical-align:-2px;animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* login */
+.box{max-width:380px;margin:0 auto;padding:8vh 24px 0}
+.hero{display:block;width:210px;margin:0 auto 14px;animation:float 5s ease-in-out infinite;filter:drop-shadow(0 18px 18px var(--shadow))}
+@keyframes float{50%{transform:translateY(-8px)}}
+.box h1{text-align:center}
+.box p.sub{text-align:center;margin:14px 0 22px;opacity:.85}
+.box label{font-weight:600;font-size:.95rem}
+.field{position:relative}
+.box input{width:100%;padding:15px 16px;margin:6px 0 16px;border-radius:16px;border:3px solid transparent;background:var(--glass);color:var(--fg);font:inherit;backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
+.box input:focus{border-color:var(--mint)}
+.eye{position:absolute;right:8px;top:12px;border:0;background:transparent;padding:8px 10px;font-size:.85rem;font-weight:700;opacity:.8}
+.main{width:100%;height:58px;border-radius:99px;border:0;background:var(--mint);color:var(--deep);font-weight:800;font-size:1.05rem;box-shadow:0 8px 18px -6px rgba(60,240,176,.8)}
+.main:active{transform:scale(.98)}
+.msg{min-height:1.4em;text-align:center;font-weight:600;margin:14px 0 0}
+.msg.err{color:#c62828}
+@media (prefers-color-scheme:dark){.msg.err{color:#ff9a9a}}
+.box .chip{display:block;margin:10px auto 0}
+code{background:var(--glass);padding:2px 6px;border-radius:6px}
+
+/* foto ampliada */
+dialog{border:0;padding:0;margin:0;background:transparent;max-width:none;max-height:none;width:100%;height:100vh;height:100dvh;overflow:hidden;color:#fff}
+dialog::backdrop{background:rgba(3,18,23,.94);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
+dialog[open]{display:flex;flex-direction:column;align-items:center;justify-content:center;animation:pop .22s ease-out}
+@keyframes pop{from{opacity:0;transform:scale(.97)}}
+.vtop{position:absolute;top:calc(12px + env(safe-area-inset-top,0px));left:0;right:0;display:flex;justify-content:space-between;align-items:center;padding:0 16px;z-index:2}
+#pos{padding:6px 14px;border-radius:99px;background:rgba(255,255,255,.12);font-weight:600;font-size:.9rem}
+#close{width:42px;height:42px;border-radius:50%;border:0;background:rgba(255,255,255,.14);color:#fff;font-size:1.1rem}
+.stage{position:relative;width:100%;flex:1 1 auto;min-height:0;display:flex;align-items:center;justify-content:center;padding:64px 14px 8px;touch-action:none}
+#big{max-width:100%;max-height:calc(100dvh - 290px);object-fit:contain;border:4px solid var(--mint);border-radius:14px 30px 14px 26px/26px 14px 28px 14px;display:block;transition:transform .2s;user-select:none;-webkit-user-select:none;-webkit-user-drag:none}
+#big.in{animation:slide .28s ease-out}
+@keyframes slide{from{opacity:0;transform:translateX(var(--dx,0)) scale(.96)}}
+.burst{position:absolute;left:50%;top:50%;font-size:6.5rem;line-height:1;color:var(--mint);opacity:0;pointer-events:none;text-shadow:0 6px 30px rgba(0,0,0,.5)}
+.burst.go{animation:burst .75s ease-out}
+@keyframes burst{0%{opacity:0;transform:translate(-50%,-50%) scale(.3)}25%{opacity:1;transform:translate(-50%,-50%) scale(1.15)}100%{opacity:0;transform:translate(-50%,-62%) scale(1)}}
+.bottom{width:100%;max-width:560px;padding:0 16px calc(16px + env(safe-area-inset-bottom,0px));text-align:center;flex:0 0 auto}
+#cap{margin:6px 0 0;font-weight:600;min-height:1.4em}
+.acts{display:flex;justify-content:center;gap:8px;margin-top:12px;flex-wrap:wrap}
+.acts button{padding:11px 15px;border-radius:99px;border:0;background:rgba(255,255,255,.14);color:#fff;font-weight:700;font-size:.92rem}
+.acts button:active{transform:scale(.96)}
+#heart.on{background:var(--mint);color:var(--deep)}
+#del{color:#ff9a9a}
+.nav{position:absolute;top:50%;transform:translateY(-50%);width:46px;height:46px;border-radius:50%;border:0;background:rgba(255,255,255,.14);color:#fff;font-size:1.6rem;line-height:1;z-index:2}
+#prev{left:8px}#next{right:8px}
+@media (max-width:600px){.nav{display:none!important}}
+.sheet{margin-top:12px;padding:16px;border-radius:24px;background:rgba(255,255,255,.12);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);text-align:left}
+.sheet label,.sheet p{display:block;margin:0 0 8px;font-weight:600}
+.sheet input{width:100%;padding:13px 14px;border-radius:14px;border:3px solid transparent;background:rgba(0,0,0,.35);color:#fff;font:inherit}
+.sheet input:focus{border-color:var(--mint);outline:0}
+.row{display:flex;gap:10px;margin-top:12px}
+.row button{flex:1;padding:13px;border-radius:99px;border:0;font-weight:700}
+.ghost{background:rgba(255,255,255,.14);color:#fff}
+.save{background:var(--mint);color:var(--deep)}
+.danger{background:#e5484d;color:#fff}
+.vt{position:absolute;top:calc(64px + env(safe-area-inset-top,0px));left:50%;transform:translateX(-50%);padding:8px 16px;border-radius:99px;background:rgba(0,0,0,.6);backdrop-filter:blur(8px);font-weight:600;font-size:.9rem;z-index:3;white-space:nowrap}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="art" viewBox="0 0 200 170">
+    <g transform="rotate(-9 78 88)"><rect x="28" y="30" width="96" height="112" rx="8" fill="#f2fdfd"/><rect x="36" y="38" width="80" height="72" rx="5" fill="#8fd3dc"/><path d="M36 110V88l24-26 20 22 14-12 22 24v14z" fill="#1f6f86"/><circle cx="98" cy="56" r="8" fill="#fff3b0"/></g>
+    <g transform="rotate(8 122 84)"><rect x="76" y="22" width="96" height="112" rx="8" fill="#f2fdfd"/><rect x="84" y="30" width="80" height="72" rx="5" fill="#b9ebef"/><path d="M84 102V84l22-24 22 26 14-14 22 22v8z" fill="#2a8ba5"/><circle cx="148" cy="48" r="8" fill="#fff3b0"/></g>
+    <path transform="translate(112 94) scale(3.4)" d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" fill="#3cf0b0" stroke="#f2fdfd" stroke-width="1.2" stroke-linejoin="round"/>
+  </symbol>
+</svg>
+
+<section id="setup" class="box hide">
+  <h1>Falta configurar</h1>
+  <p class="sub">Abra o <code>index.html</code> e cole a URL e a chave do seu projeto Supabase no começo do script. O passo a passo está no README.</p>
+</section>
+
+<section id="login" class="box hide">
+  <svg class="hero" aria-hidden="true"><use href="#art"/></svg>
+  <h1 style="font-size:2.6rem">Nossas fotos</h1>
+  <p class="sub">Só para nós dois. Entre com o e-mail e a senha que você cadastrou.</p>
+  <form id="f">
+    <label for="em">E-mail</label>
+    <input id="em" type="email" autocomplete="username" required>
+    <label for="pw">Senha</label>
+    <div class="field">
+      <input id="pw" type="password" autocomplete="current-password" required>
+      <button class="eye" id="eye" type="button" aria-label="Mostrar senha">Mostrar</button>
+    </div>
+    <button class="main" id="go" type="submit">Entrar</button>
+  </form>
+  <p class="msg" id="lmsg" role="alert"></p>
+  <button class="chip mint inst hide" type="button">Instalar app</button>
+</section>
+
+<main id="app" class="hide">
+  <header>
+    <div>
+      <h1>Nossas<br>fotos</h1>
+      <svg class="under" viewBox="0 0 160 12" aria-hidden="true"><path d="M3 8C30 2 60 11 90 6s50-2 67 1"/></svg>
+      <p id="count"></p>
+    </div>
+    <div class="hactions">
+      <button class="chip mint inst hide" type="button">Instalar app</button>
+      <button class="chip" id="out" type="button">Sair</button>
+    </div>
+  </header>
+
+  <div class="tabs hide" id="tabs">
+    <div class="seg" role="group" aria-label="Filtro">
+      <button class="on" id="tAll" type="button">Todas</button>
+      <button id="tFav" type="button">♥ Favoritas</button>
+    </div>
+  </div>
+
+  <div id="empty" class="empty hide">
+    <svg class="hero" aria-hidden="true"><use href="#art"/></svg>
+    <p><strong>Sua primeira foto aparece aqui.</strong><br>Toque em “Tirar foto” para começar o álbum.</p>
+  </div>
+  <div id="days"></div>
+
+  <div class="dock">
+    <button class="pick" id="gal" aria-label="Escolher da galeria"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="3"/><circle cx="9" cy="10" r="1.8"/><path d="m21 16-5-5-8 9"/></svg></button>
+    <button class="shoot" id="cam"><svg viewBox="0 0 24 24"><path d="M3 8.5A2.5 2.5 0 0 1 5.5 6h1.7l1.1-1.6A1 1 0 0 1 9.1 4h5.8a1 1 0 0 1 .8.4L16.8 6h1.7A2.5 2.5 0 0 1 21 8.5v9a2.5 2.5 0 0 1-2.5 2.5h-13A2.5 2.5 0 0 1 3 17.5z"/><circle cx="12" cy="13" r="3.5"/></svg>Tirar foto</button>
+  </div>
+  <div class="toast hide" id="toast" role="status"></div>
+  <input id="fc" type="file" accept="image/*" capture="environment" class="hide">
+  <input id="fg" type="file" accept="image/*" multiple class="hide">
+</main>
+
+<dialog id="dlg">
+  <div class="vtop"><span id="pos"></span><button id="close" aria-label="Fechar">✕</button></div>
+  <div class="vt hide" id="vt" role="status"></div>
+  <div class="stage" id="stage">
+    <img id="big" alt="Foto ampliada" draggable="false">
+    <div class="burst" id="burst" aria-hidden="true">♥</div>
+  </div>
+  <div class="bottom">
+    <p id="cap"></p>
+    <div class="acts" id="acts">
+      <button id="heart">♡ Favoritar</button>
+      <button id="note">✎ Legenda</button>
+      <button id="share">↗ Enviar</button>
+      <button id="dl">⬇ Baixar</button>
+      <button id="del">Apagar</button>
+    </div>
+    <div class="sheet hide" id="sheet">
+      <div id="sNote" class="hide">
+        <label for="noteIn">Legenda</label>
+        <input id="noteIn" maxlength="120" placeholder="Escreva algo sobre esta foto" autocomplete="off">
+        <div class="row"><button class="ghost" id="nCancel" type="button">Cancelar</button><button class="save" id="nSave" type="button">Salvar</button></div>
+      </div>
+      <div id="sDel" class="hide">
+        <p>Apagar esta foto para sempre?</p>
+        <div class="row"><button class="ghost" id="dCancel" type="button">Cancelar</button><button class="danger" id="dOk" type="button">Apagar</button></div>
+      </div>
+    </div>
+  </div>
+  <button class="nav" id="prev" aria-label="Foto anterior">‹</button>
+  <button class="nav" id="next" aria-label="Próxima foto">›</button>
+</dialog>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script>
+// COLE AQUI os dados do seu projeto Supabase (Project Settings > API)
+const SUPABASE_URL = "https://dgmgtavfjxwryynnxqlt.supabase.co";
+const SUPABASE_KEY = "sb_publishable_pN3ikePfiSEt4tJ4LtCgPw_vix1RKcx";
+
+const $ = s => document.querySelector(s);
+const show = id => ["setup","login","app"].forEach(x => $("#"+x).classList.toggle("hide", x !== id));
+let db, items = [], cur = 0, onlyFav = false, dirty = false, rt, first = true, toastT, vtT, deferredInstall, pushed = false, lastFavAt = 0;
+
+async function init(){
+  if (SUPABASE_URL.startsWith("COLE")) return show("setup");
+  db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+  const { data:{ session } } = await db.auth.getSession();
+  session ? enter() : show("login");
+  if ("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js").catch(()=>{});
+}
+
+function toast(t, o = {}){
+  const el = $("#toast"); clearTimeout(toastT);
+  el.textContent = t; el.classList.toggle("hide", !t); el.classList.toggle("busy", !!o.busy);
+  if (t && o.ms) toastT = setTimeout(() => el.classList.add("hide"), o.ms);
+}
+function vtoast(t){
+  const el = $("#vt"); clearTimeout(vtT); el.textContent = t; el.classList.remove("hide");
+  vtT = setTimeout(() => el.classList.add("hide"), 2200);
+}
+
+/* ---------- login ---------- */
+$("#f").onsubmit = async e => {
+  e.preventDefault();
+  const b = $("#go"), m = $("#lmsg"); b.disabled = true; b.textContent = "Entrando…"; m.textContent = ""; m.classList.remove("err");
+  const { error } = await db.auth.signInWithPassword({ email:$("#em").value.trim(), password:$("#pw").value });
+  b.disabled = false; b.textContent = "Entrar";
+  if (error){ m.textContent = "E-mail ou senha incorretos."; m.classList.add("err"); } else enter();
+};
+$("#eye").onclick = () => {
+  const p = $("#pw"), v = p.type === "password"; p.type = v ? "text" : "password";
+  $("#eye").textContent = v ? "Ocultar" : "Mostrar"; $("#eye").setAttribute("aria-label", v ? "Ocultar senha" : "Mostrar senha");
+};
+$("#out").onclick = async () => {
+  await db.auth.signOut();
+  if (rt){ db.removeChannel(rt); rt = null; }
+  items = []; $("#days").innerHTML = ""; first = true; onlyFav = false;
+  $("#tAll").classList.add("on"); $("#tFav").classList.remove("on");
+  $("#pw").value = ""; show("login"); $("#lmsg").textContent = "";
+};
+async function enter(){
+  show("app"); skeleton(); await load();
+  if (!rt) rt = db.channel("fotos").on("postgres_changes", { event:"*", schema:"public", table:"fotos" }, () => { clearTimeout(rt._t); rt._t = setTimeout(load, 400); }).subscribe();
+}
+
+/* ---------- instalar como app (Android/Chrome) ---------- */
+window.addEventListener("beforeinstallprompt", e => { e.preventDefault(); deferredInstall = e; document.querySelectorAll(".inst").forEach(b => b.classList.remove("hide")); });
+window.addEventListener("appinstalled", () => { deferredInstall = null; document.querySelectorAll(".inst").forEach(b => b.classList.add("hide")); });
+document.querySelectorAll(".inst").forEach(b => b.onclick = async () => {
+  if (!deferredInstall) return;
+  deferredInstall.prompt(); await deferredInstall.userChoice.catch(()=>{});
+  deferredInstall = null; document.querySelectorAll(".inst").forEach(x => x.classList.add("hide"));
+});
+
+/* ---------- álbum ---------- */
+const dayName = d => {
+  const t = new Date(); t.setHours(0,0,0,0); const x = new Date(d); x.setHours(0,0,0,0);
+  const n = Math.round((t - x) / 864e5);
+  return n === 0 ? "Hoje" : n === 1 ? "Ontem" : x.toLocaleDateString("pt-BR", { day:"numeric", month:"long" });
+};
+const hour = d => new Date(d).toLocaleTimeString("pt-BR", { hour:"2-digit", minute:"2-digit" });
+const since = d => {
+  const x = new Date(d), y = x.getFullYear() !== new Date().getFullYear();
+  return x.toLocaleDateString("pt-BR", y ? { day:"numeric", month:"long", year:"numeric" } : { day:"numeric", month:"long" });
+};
+
+function skeleton(){
+  const box = $("#days"); if (box.children.length) return;
+  box.innerHTML = '<section class="day"><div class="mosaic">' + '<div class="sk"></div>'.repeat(5) + '</div></section>';
+}
+
+async function load(){
+  if ($("#dlg").open){ dirty = true; return; }
+  const { data, error } = await db.from("fotos").select("id,path,created_at,legenda,favorita").order("created_at",{ascending:false});
+  const box = $("#days");
+  if (error){ box.innerHTML = ""; return toast("Não consegui carregar as fotos. Confira o README.", { ms:5000 }); }
+  const rows = onlyFav ? data.filter(f => f.favorita) : data;
+  const favCount = data.filter(f => f.favorita).length;
+  $("#empty").classList.toggle("hide", data.length > 0);
+  $("#tabs").classList.toggle("hide", !data.length);
+  $("#tFav").textContent = favCount ? `♥ Favoritas · ${favCount}` : "♥ Favoritas";
+  $("#count").textContent = data.length ? `${data.length} ${data.length === 1 ? "foto guardada" : "fotos guardadas"} · desde ${since(data[data.length-1].created_at)}` : "";
+  if (onlyFav && !rows.length) toast("Nenhuma favorita ainda. Abra uma foto e toque no coração.", { ms:3500 });
+  box.innerHTML = ""; items = [];
+  box.classList.toggle("anim", first); first = false;
+  if (!rows.length) return;
+  const { data: urls } = await db.storage.from("fotos").createSignedUrls(rows.map(f => f.path), 3600);
+  let lastKey = "", mosaic, k = 0;
+  rows.forEach((f, i) => {
+    const url = urls && urls[i] && urls[i].signedUrl; if (!url) return;
+    const key = new Date(f.created_at).toDateString();
+    if (key !== lastKey){
+      lastKey = key;
+      const sec = document.createElement("section"); sec.className = "day";
+      const hd = document.createElement("h2"); hd.innerHTML = "<b></b><span></span>"; hd.firstChild.textContent = dayName(f.created_at);
+      mosaic = document.createElement("div"); mosaic.className = "mosaic";
+      sec.append(hd, mosaic); box.appendChild(sec);
+    }
+    const n = items.push({ id:f.id, path:f.path, url, date:f.created_at, legenda:f.legenda, favorita:f.favorita }) - 1;
+    const b = document.createElement("button"); b.className = "frame"; b.style.setProperty("--i", Math.min(k++, 14));
+    b.setAttribute("aria-label", f.legenda ? `Ampliar foto: ${f.legenda}` : "Ampliar foto");
+    const img = new Image(); img.alt = ""; img.loading = "lazy"; img.onload = () => img.classList.add("on"); img.src = url;
+    const tm = document.createElement("span"); tm.className = "time"; tm.textContent = hour(f.created_at);
+    b.append(img, tm);
+    if (f.legenda){ const cd = document.createElement("span"); cd.className = "cap-dot"; cd.textContent = "✎"; b.appendChild(cd); }
+    if (f.favorita){ const hr = document.createElement("span"); hr.className = "fav"; hr.textContent = "♥"; b.appendChild(hr); }
+    b.onclick = () => openAt(n); mosaic.appendChild(b);
+    const c = mosaic.children.length; mosaic.previousSibling.lastChild.textContent = `${c} ${c === 1 ? "foto" : "fotos"}`;
+  });
+}
+
+/* ---------- foto ampliada ---------- */
+function paintInfo(){
+  const it = items[cur];
+  $("#cap").textContent = `${dayName(it.date)}, ${hour(it.date)}` + (it.legenda ? ` · ${it.legenda}` : "");
+  $("#heart").classList.toggle("on", !!it.favorita); $("#heart").textContent = it.favorita ? "♥ Favorita" : "♡ Favoritar";
+  $("#pos").textContent = `${cur + 1} / ${items.length}`;
+}
+function openAt(i, dir = 0){
+  if (!items.length) return;
+  cur = (i + items.length) % items.length; const it = items[cur], big = $("#big");
+  big.style.setProperty("--dx", dir * 48 + "px");
+  big.classList.remove("in"); void big.offsetWidth; big.classList.add("in");
+  big.src = it.url; paintInfo(); closeSheet();
+  const many = items.length > 1;
+  $("#prev").classList.toggle("hide", !many); $("#next").classList.toggle("hide", !many);
+  if (!$("#dlg").open){ $("#dlg").showModal(); history.pushState({ v:1 }, ""); pushed = true; }
+  if (many){ [cur + 1, cur - 1].forEach(j => { const p = items[(j + items.length) % items.length]; if (p) new Image().src = p.url; }); }
+}
+function sheet(mode){
+  ["sNote","sDel"].forEach(x => $("#"+x).classList.toggle("hide", x !== mode));
+  $("#sheet").classList.toggle("hide", !mode); $("#acts").classList.toggle("hide", !!mode);
+  if (mode === "sNote"){ $("#noteIn").value = items[cur].legenda || ""; setTimeout(() => $("#noteIn").focus(), 60); }
+}
+const closeSheet = () => sheet(null);
+
+async function setFav(v){
+  const it = items[cur];
+  const { error } = await db.from("fotos").update({ favorita: v }).eq("id", it.id);
+  if (error) return vtoast("Não deu certo. Tente de novo.");
+  it.favorita = v; dirty = true; paintInfo(); if (navigator.vibrate) navigator.vibrate(12);
+}
+function burst(){ const b = $("#burst"); b.classList.remove("go"); void b.offsetWidth; b.classList.add("go"); }
+function dbl(){ lastFavAt = Date.now(); burst(); if (!items[cur].favorita) setFav(true); }
+
+$("#heart").onclick = () => { const v = !items[cur].favorita; if (v) burst(); setFav(v); };
+$("#note").onclick = () => sheet("sNote");
+$("#nCancel").onclick = closeSheet;
+async function saveNote(){
+  const it = items[cur], t = $("#noteIn").value.trim();
+  const { error } = await db.from("fotos").update({ legenda: t }).eq("id", it.id);
+  if (error) return vtoast("Não deu certo. Tente de novo.");
+  it.legenda = t; dirty = true; paintInfo(); closeSheet();
+}
+$("#nSave").onclick = saveNote;
+$("#noteIn").onkeydown = e => { if (e.key === "Enter"){ e.preventDefault(); saveNote(); } };
+$("#del").onclick = () => sheet("sDel");
+$("#dCancel").onclick = closeSheet;
+$("#dOk").onclick = async () => {
+  const it = items[cur];
+  const { error } = await db.from("fotos").delete().eq("id", it.id);
+  if (error) return vtoast("Não consegui apagar.");
+  await db.storage.from("fotos").remove([it.path]).catch(()=>{});
+  dirty = true; $("#dlg").close(); toast("Foto apagada", { ms:2200 });
+};
+
+const fname = it => `nossas-fotos-${new Date(it.date).toISOString().slice(0,16).replace(/[:T]/g,"-")}.jpg`;
+async function getBlob(it){ const r = await fetch(it.url); if (!r.ok) throw new Error("fetch"); return r.blob(); }
+$("#dl").onclick = async () => {
+  const it = items[cur];
+  try {
+    const b = await getBlob(it), a = document.createElement("a");
+    a.href = URL.createObjectURL(b); a.download = fname(it); document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(a.href), 4000); vtoast("Foto baixada");
+  } catch (err) { window.open(it.url, "_blank"); }
+};
+if (!navigator.share) $("#share").classList.add("hide");
+$("#share").onclick = async () => {
+  const it = items[cur];
+  try {
+    const file = new File([await getBlob(it)], fname(it), { type:"image/jpeg" });
+    if (navigator.canShare && navigator.canShare({ files:[file] })) await navigator.share({ files:[file], text: it.legenda || "Nossas fotos" });
+    else vtoast("Este aparelho não permite enviar daqui");
+  } catch (err) { if (err && err.name !== "AbortError") vtoast("Não consegui enviar"); }
+};
+
+/* gestos: deslizar para os lados troca, para baixo fecha, toque duplo favorita */
+const stage = $("#stage"); let tx = 0, ty = 0, dx = 0, dy = 0, swiping = false, lastTap = 0;
+stage.addEventListener("touchstart", e => {
+  if (e.touches.length !== 1) return;
+  tx = e.touches[0].clientX; ty = e.touches[0].clientY; dx = dy = 0; swiping = true; $("#big").style.transition = "none";
+}, { passive:true });
+stage.addEventListener("touchmove", e => {
+  if (!swiping) return;
+  dx = e.touches[0].clientX - tx; dy = e.touches[0].clientY - ty; const big = $("#big");
+  if (Math.abs(dx) > Math.abs(dy)) big.style.transform = `translateX(${dx}px)`;
+  else if (dy > 0) big.style.transform = `translateY(${dy}px) scale(${1 - Math.min(dy, 300) / 1200})`;
+}, { passive:true });
+stage.addEventListener("touchend", e => {
+  if (!swiping) return; swiping = false;
+  const big = $("#big"); big.style.transition = ""; big.style.transform = "";
+  if (Math.abs(dx) < 10 && Math.abs(dy) < 10){
+    const now = Date.now();
+    if (e.target === big && now - lastTap < 320){ dbl(); lastTap = 0; } else lastTap = now;
+    return;
+  }
+  if (Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy)) openAt(cur + (dx < 0 ? 1 : -1), dx < 0 ? 1 : -1);
+  else if (dy > 90 && dy > Math.abs(dx)) $("#dlg").close();
+});
+$("#big").addEventListener("dblclick", () => { if (Date.now() - lastFavAt > 500) dbl(); });
+stage.addEventListener("click", e => { if (e.target === stage) $("#dlg").close(); });
+
+$("#close").onclick = () => $("#dlg").close();
+$("#prev").onclick = () => openAt(cur - 1, -1);
+$("#next").onclick = () => openAt(cur + 1, 1);
+$("#dlg").addEventListener("close", () => {
+  closeSheet();
+  if (pushed){ pushed = false; history.back(); }
+  if (dirty){ dirty = false; load(); }
+});
+window.addEventListener("popstate", () => { if ($("#dlg").open){ pushed = false; $("#dlg").close(); } });
+document.addEventListener("keydown", e => {
+  if (!$("#dlg").open || e.target.tagName === "INPUT") return;
+  if (e.key === "ArrowLeft") openAt(cur - 1, -1);
+  if (e.key === "ArrowRight") openAt(cur + 1, 1);
+});
+
+/* ---------- filtro ---------- */
+function setFilter(v){
+  if (onlyFav === v) return; onlyFav = v;
+  $("#tAll").classList.toggle("on", !v); $("#tFav").classList.toggle("on", v); toast(""); load();
+}
+$("#tAll").onclick = () => setFilter(false);
+$("#tFav").onclick = () => setFilter(true);
+
+/* ---------- enviar fotos ---------- */
+function shrink(file){
+  return new Promise((ok, fail) => {
+    const u = URL.createObjectURL(file), img = new Image();
+    img.onload = () => {
+      const k = Math.min(1, 1600 / Math.max(img.naturalWidth, img.naturalHeight));
+      const c = document.createElement("canvas");
+      c.width = Math.round(img.naturalWidth * k); c.height = Math.round(img.naturalHeight * k);
+      c.getContext("2d").drawImage(img, 0, 0, c.width, c.height);
+      URL.revokeObjectURL(u); c.toBlob(b => b ? ok(b) : fail(), "image/jpeg", .82);
+    };
+    img.onerror = fail; img.src = u;
+  });
+}
+
+async function send(files){
+  if (!files.length) return;
+  const { data:{ user } } = await db.auth.getUser(); let n = 0, bad = 0;
+  for (const file of files){
+    toast(`Enviando ${++n} de ${files.length}…`, { busy:true });
+    try {
+      const blob = await shrink(file), path = `${user.id}/${Date.now()}-${n}.jpg`;
+      const up = await db.storage.from("fotos").upload(path, blob, { contentType:"image/jpeg" }); if (up.error) throw up.error;
+      const ins = await db.from("fotos").insert({ path }); if (ins.error) throw ins.error;
+    } catch (err) { bad++; }
+  }
+  if (bad) toast(bad === files.length ? "Não foi possível enviar. Tente de novo." : `${bad} de ${files.length} fotos não foram enviadas.`, { ms:4500 });
+  else toast(files.length === 1 ? "Foto enviada ♥" : `${files.length} fotos enviadas ♥`, { ms:2200 });
+  await load();
+}
+$("#cam").onclick = () => $("#fc").click();
+$("#gal").onclick = () => $("#fg").click();
+[$("#fc"), $("#fg")].forEach(i => i.onchange = () => { send([...i.files]); i.value = ""; });
+document.addEventListener("visibilitychange", () => { if (!document.hidden && db && !$("#app").classList.contains("hide")) load(); });
+
+init();
+</script>
+</body>
+</html>
